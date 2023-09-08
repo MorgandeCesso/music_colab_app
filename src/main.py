@@ -4,7 +4,7 @@ from auth.base_config import auth_backend
 from auth.manager import get_user_manager
 from auth.schemas import UserCreate, UserRead
 from database import User
-
+from feed.router import router as router_feed
 app = FastAPI(title="Music colab app")
 
 fastapi_users = FastAPIUsers[User, int](
@@ -24,6 +24,8 @@ app.include_router(
     tags=["auth"],
 )
 
+app.include_router(router_feed)
+
 current_user = fastapi_users.current_user()
 
 @app.get("/unprotected-route")
@@ -35,3 +37,4 @@ current_active_user = fastapi_users.current_user(active=True)
 @app.get("/protected-route")
 def protected_route(user: User = Depends(current_active_user)):
     return f"Hello, {user.nickname}!"
+
