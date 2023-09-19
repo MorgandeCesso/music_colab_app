@@ -85,8 +85,3 @@ async def delete_message(message_id: int, session: AsyncSession = Depends(get_as
     await session.execute(statement)
     await session.commit()
     return {"status": "success"}
-
-
-##########################################
-
-#Члены? Пробовал
