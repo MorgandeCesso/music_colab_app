@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 from base import Base
 
+#ПОМОГИТЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕ
 
 class Role(Base):
     __tablename__ = "role"
@@ -33,6 +34,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     role: Mapped[Role] = relationship(back_populates="user")
     picture_id: Mapped[int] = mapped_column(ForeignKey("picture.id"))
     picture: Mapped[Picture] = relationship(back_populates="user")
+    message: Mapped[List["Message"]] = relationship(back_populates="user")
     registration_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow)
     post: Mapped[List["Post"]] = relationship(back_populates="user")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -61,3 +63,40 @@ class Post(Base):
     descripton: Mapped[str] = mapped_column(String)
     price: Mapped[int] = mapped_column(Integer)
     post_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow)
+
+class Message(Base):
+    __tablename__ = "message"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    room_id: Mapped[int] = mapped_column(ForeignKey("room.id"), nullable=False, unique=True)
+    user: Mapped["User"] = relationship(back_populates="message")
+    room: Mapped["Room"] = relationship(back_populates="message")
+    text: Mapped[str] = mapped_column(String(500), nullable=False)
+    attachment_id: Mapped[int] = mapped_column(ForeignKey("attachment.id"), nullable=True)
+    attachment: Mapped["Attachment"] = relationship(back_populates="message")
+    send_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow)
+
+class Room(Base):
+    __tablename__ = "room"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    room_type_id: Mapped[int] = mapped_column(ForeignKey("room_type.id"), nullable=False)
+    room_type: Mapped["RoomType"] = relationship(back_populates="room")
+    message: Mapped[List["Message"]] = relationship(back_populates="room", cascade="all, delete")
+    name: Mapped[str] = mapped_column(String(20), nullable=True)
+
+class RoomType(Base):
+
+    __tablename__ = "room_type"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type: Mapped[str] = mapped_column(String(20), nullable=False)
+    room: Mapped[List["Room"]] = relationship(back_populates="room_type")
+
+class Attachment(Base):
+    __tablename__ = "attachment"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    path: Mapped[str] = mapped_column(String, nullable=False)
+    message: Mapped[List["Message"]] = relationship(back_populates="attachment")

@@ -5,16 +5,19 @@ from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models, exce
 
 from database import User, get_user_db
 
+#Секрет, никому не рассказывайте
 SECRET = "SECRET"
 
-
+#Скажем FastAPIUsers спасибо за офигенную документацию
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
 
+    #тут можно что-то сделать сразу после регистрации
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")
 
+    #Нечто страшное, где можно баловаться со словарями и переопределять ключики
     async def create(
         self,
         user_create: schemas.UC,
@@ -42,5 +45,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
         return created_user
 
+#Спасибо за рабочую регистрацию, манагер
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)

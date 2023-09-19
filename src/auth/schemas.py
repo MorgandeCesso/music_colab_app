@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi_users import schemas
 
-
+#Это мы отправляем
 class UserRead(schemas.BaseUser[int]):
     id: int
     given_name: str
@@ -17,7 +17,7 @@ class UserRead(schemas.BaseUser[int]):
     class Config:
         orm_mode = True
 
-
+#Это мы получаем
 class UserCreate(schemas.BaseUserCreate):
     given_name: str
     surname: str
